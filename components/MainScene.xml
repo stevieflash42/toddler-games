@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="MainScene" extends="Scene">
+  <script type="text/brightscript" uri="pkg:/components/MainScene.brs" />
+  <children>
+    <Rectangle id="bg" translation="[0,0]" width="1920" height="1080" color="0xFF6B6BFF" />
+    <Label id="letter" translation="[80,100]" width="900" height="400" horizAlign="center" vertAlign="center" color="0xFFFFFFFF" />
+    <Poster id="picture" translation="[1000,100]" width="800" height="800" loadDisplayMode="scaleToFit" />
+    <Label id="word" translation="[0,880]" width="1920" height="160" horizAlign="center" vertAlign="center" color="0xFFFFFFFF" />
+    <Audio id="audio" />
+  </children>
+</component>
