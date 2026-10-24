@@ -5,7 +5,7 @@ A tiny Roku channel for toddlers: press any remote button to see the next letter
 ## Sideload
 
 1. On the Roku, enable developer mode: Home x3, Up x2, Right, Left, Right, Left, Right. Set a web password.
-2. Build the package: `zip -r abc.zip manifest source components images sounds`
+2. Build the package: `zip -r abc.zip manifest words.json source components images sounds`
 3. Open `http://<roku-ip>` in a browser, log in as `rokudev`, upload `abc.zip`, click Install.
 
 ## Your own voice
@@ -14,7 +14,7 @@ Record each letter as 16-bit mono PCM WAV (22.05 or 44.1 kHz) and overwrite `sou
 
 ## Regenerating assets
 
-`npm pack @twemoji/svg`, extract it, then `python3 tools/gen_assets.py <extracted>/package`. Needs espeak-ng, ffmpeg, rsvg-convert and Pillow. To change words, edit `WORDS` in the script and the `m.letters` array in `components/MainScene.brs`.
+`npm pack @twemoji/svg`, extract it, then `python3 tools/gen_assets.py <extracted>/package`. Needs espeak-ng, ffmpeg, rsvg-convert and Pillow. To change words, edit `words.json` (used by both the channel and the script).
 
 ## Attribution
 

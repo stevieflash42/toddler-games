@@ -1,24 +1,14 @@
 #!/usr/bin/env python3
 """Regenerate sounds/, images/ and icons. Usage: tools/gen_assets.py TWEMOJI_SVG_DIR
-The SVG dir is the contents of `npm pack @twemoji/svg` (the extracted package/ folder)."""
-import subprocess, sys
+The SVG dir is the contents of `npm pack @twemoji/svg` (the extracted package/ folder).
+Needs: apt-get install -y espeak-ng librsvg2-bin; ffmpeg; Pillow."""
+import json, subprocess, sys
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parent.parent
 FONT = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
-# letter, word, twemoji codepoint
-WORDS = [
-    ("A", "Apple", "1f34e"), ("B", "Ball", "26bd"), ("C", "Cat", "1f431"),
-    ("D", "Dog", "1f436"), ("E", "Elephant", "1f418"), ("F", "Fish", "1f41f"),
-    ("G", "Grapes", "1f347"), ("H", "House", "1f3e0"), ("I", "Ice cream", "1f368"),
-    ("J", "Juice", "1f9c3"), ("K", "Kite", "1fa81"), ("L", "Lion", "1f981"),
-    ("M", "Moon", "1f319"), ("N", "Nose", "1f443"), ("O", "Octopus", "1f419"),
-    ("P", "Pig", "1f437"), ("Q", "Queen", "1f451"), ("R", "Rainbow", "1f308"),
-    ("S", "Sun", "2600"), ("T", "Tree", "1f333"), ("U", "Umbrella", "2602"),
-    ("V", "Volcano", "1f30b"), ("W", "Whale", "1f433"), ("X", "X-ray", "1fa7b"),
-    ("Y", "Yo-yo", "1fa80"), ("Z", "Zebra", "1f993"),
-]
+WORDS = json.loads((ROOT / "words.json").read_text())
 
 def run(*a):
     subprocess.run(a, check=True)
@@ -37,9 +27,11 @@ def icon(path, w, h):
 
 def main(svg_dir):
     svg_dir = Path(svg_dir)
-    for l, word, cp in WORDS:
-        l = l.lower()
+    for w in WORDS:
+        l, word, cp = w["letter"].lower(), w["word"], w["emoji"]
         run("rsvg-convert", "-w", "512", "-h", "512", "-o", str(ROOT / f"images/{l}.png"), str(svg_dir / f"{cp}.svg"))
+        # Comma stops espeak reading the 2nd "A" as the article "uh"; en-us says "zee" not "zed".
+        # Check pronunciation without audio: espeak-ng -v en-us -q -x "<text>"
         text = f"{l.upper()}. {l.upper()}, is for {word}."
         run("espeak-ng", "-v", "en-us", "-s", "130", "-w", str(ROOT / f"sounds/_{l}.wav"), text)
         run("ffmpeg", "-y", "-loglevel", "error", "-i", str(ROOT / f"sounds/_{l}.wav"),

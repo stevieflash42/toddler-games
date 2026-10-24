@@ -1,35 +1,9 @@
 sub init()
-    m.letters = [
-        { letter: "A", word: "Apple", color: "0xFF6B6BFF" },
-        { letter: "B", word: "Ball", color: "0x4D96FFFF" },
-        { letter: "C", word: "Cat", color: "0xFFA630FF" },
-        { letter: "D", word: "Dog", color: "0x9B5DE5FF" },
-        { letter: "E", word: "Elephant", color: "0x3DB2A8FF" },
-        { letter: "F", word: "Fish", color: "0x00A6EDFF" },
-        { letter: "G", word: "Grapes", color: "0x8E44ADFF" },
-        { letter: "H", word: "House", color: "0xE67E22FF" },
-        { letter: "I", word: "Ice cream", color: "0xF15BB5FF" },
-        { letter: "J", word: "Juice", color: "0xF28C28FF" },
-        { letter: "K", word: "Kite", color: "0x2EC4B6FF" },
-        { letter: "L", word: "Lion", color: "0xE9A800FF" },
-        { letter: "M", word: "Moon", color: "0x5C6BC0FF" },
-        { letter: "N", word: "Nose", color: "0xEF6F6CFF" },
-        { letter: "O", word: "Octopus", color: "0xC2185BFF" },
-        { letter: "P", word: "Pig", color: "0xF78FB3FF" },
-        { letter: "Q", word: "Queen", color: "0x7E57C2FF" },
-        { letter: "R", word: "Rainbow", color: "0x26A69AFF" },
-        { letter: "S", word: "Sun", color: "0xF4A100FF" },
-        { letter: "T", word: "Tree", color: "0x43A047FF" },
-        { letter: "U", word: "Umbrella", color: "0x1E88E5FF" },
-        { letter: "V", word: "Volcano", color: "0xE53935FF" },
-        { letter: "W", word: "Whale", color: "0x039BE5FF" },
-        { letter: "X", word: "X-ray", color: "0x6D4C9FFF" },
-        { letter: "Y", word: "Yo-yo", color: "0xD81B60FF" },
-        { letter: "Z", word: "Zebra", color: "0x546E7AFF" }
-    ]
+    m.letters = ParseJson(ReadAsciiFile("pkg:/words.json"))
     m.index = 0
     m.clock = CreateObject("roTimespan")
 
+    ' Custom sizes need the *File system font URIs; plain font:BoldSystemFont is not valid here.
     big = CreateObject("roSGNode", "Font")
     big.uri = "font:BoldSystemFontFile"
     big.size = 300
