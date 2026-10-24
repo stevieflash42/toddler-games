@@ -31,11 +31,11 @@ sub init()
     m.clock = CreateObject("roTimespan")
 
     big = CreateObject("roSGNode", "Font")
-    big.uri = "font:BoldSystemFont"
+    big.uri = "font:BoldSystemFontFile"
     big.size = 300
     m.top.findNode("letter").font = big
     small = CreateObject("roSGNode", "Font")
-    small.uri = "font:BoldSystemFont"
+    small.uri = "font:BoldSystemFontFile"
     small.size = 120
     m.top.findNode("word").font = small
 
