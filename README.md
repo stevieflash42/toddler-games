@@ -6,6 +6,7 @@ A tiny Roku channel for toddlers: press any remote button to see the next letter
 
 1. On the Roku, enable developer mode: Home x3, Up x2, Right, Left, Right, Left, Right. Set a web password.
 2. Build the package: `zip -r abc.zip manifest words.json source components images sounds`
+    - `Compress-Archive -Path manifest, words.json, source, components, images, sounds -DestinationPath abc.zip`
 3. Open `http://<roku-ip>` in a browser, log in as `rokudev`, upload `abc.zip`, click Install.
 
 ## Your own voice
