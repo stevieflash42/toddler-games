@@ -1,3 +1,5 @@
 abc.zip
 out/
 node_modules/
+
+/twemoji-svg**
