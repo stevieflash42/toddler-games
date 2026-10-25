@@ -17,7 +17,7 @@ Record each letter as 16-bit mono PCM WAV (22.05 or 44.1 kHz) and overwrite `sou
 
 Needs Python 3, `pip install piper-tts Pillow`, ffmpeg, and Inkscape on PATH (`winget install -e --id Inkscape.Inkscape`).
 
-Download `en_US-ryan-high.onnx` and `en_US-ryan-high.onnx.json` from [rhasspy/piper-voices](https://huggingface.co/rhasspy/piper-voices) into `voices/`. That folder is git-ignored.
+Download [`en_US-ryan-high.onnx`](https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/ryan/high/en_US-ryan-high.onnx?download=true) and [`en_US-ryan-high.onnx.json`](https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/ryan/high/en_US-ryan-high.onnx.json?download=true) from [rhasspy/piper-voices](https://huggingface.co/rhasspy/piper-voices) into `voices/`
 
 Extract `npm pack @twemoji/svg`, then run `python tools/gen_assets.py <extracted>/package`.
 
