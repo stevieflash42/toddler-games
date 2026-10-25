@@ -10,7 +10,8 @@
             "request": "launch",
             "program": "C:\\Projects\\toddler-roku-games\\tools\\gen_assets.py",
             "console": "integratedTerminal",
-            "args": ["${workspaceFolder}\\twemoji-svg\\package"]
+            "args": ["${workspaceFolder}\\twemoji-svg\\package"],
+            "subProcess": false
         }
     ]
 }
