@@ -15,9 +15,7 @@ Record each letter as 16-bit mono PCM WAV (22.05 or 44.1 kHz) and overwrite `sou
 
 ## Regenerating assets
 
-Needs Python 3, `pip install piper-tts Pillow`, ffmpeg, and Inkscape on PATH (`winget install -e --id Inkscape.Inkscape`).
-
-Download [`en_US-ryan-high.onnx`](https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/ryan/high/en_US-ryan-high.onnx?download=true) and [`en_US-ryan-high.onnx.json`](https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/ryan/high/en_US-ryan-high.onnx.json?download=true) from [rhasspy/piper-voices](https://huggingface.co/rhasspy/piper-voices) into `voices/`
+Needs Python 3. Run `pwsh tools/install_asset_tools.ps1` once to install `piper-tts`, `Pillow`, ffmpeg, Inkscape, and the [en_US-ryan-high](https://huggingface.co/rhasspy/piper-voices) voice into `voices/`.
 
 Extract `npm pack @twemoji/svg`, then run `python tools/gen_assets.py <extracted>/package`.
 
