@@ -1,17 +1,29 @@
 #!/usr/bin/env python3
 """Regenerate sounds/, images/ and icons. Usage: tools/gen_assets.py TWEMOJI_SVG_DIR
 The SVG dir is the contents of `npm pack @twemoji/svg` (the extracted package/ folder).
-Needs: apt-get install -y espeak-ng librsvg2-bin; ffmpeg; Pillow."""
+Needs: inkscape CLI; ffmpeg; Pillow; pip install piper-tts;
+the voice files en_US-ryan-high.onnx and .onnx.json in voices/ (from rhasspy/piper-voices)."""
 import json, subprocess, sys
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parent.parent
-FONT = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
-WORDS = json.loads((ROOT / "words.json").read_text())
+FONT = "C:/Windows/Fonts/arialbd.ttf"
+WORDS = json.loads((ROOT / "words.json").read_text(encoding="utf-8"))
+VOICE = "en_US-ryan-high"
+VOICES = ROOT / "voices"
+LENGTH_SCALE = 1.1
+PAUSE_S = 0.6
+# True speaks the IPA in words.json "phonetic" instead of the letter.
+PHONETIC = False
 
 def run(*a):
     subprocess.run(a, check=True)
+
+def speak(text, out):
+    run(sys.executable, "-m", "piper", "-m", VOICE, "--data-dir", str(VOICES),
+        "--length-scale", str(LENGTH_SCALE), "--sentence-silence", str(PAUSE_S),
+        "-f", str(out), "--", text)
 
 def icon(path, w, h):
     im = Image.new("RGB", (w, h), "#FFD23F")
@@ -29,15 +41,14 @@ def main(svg_dir):
     svg_dir = Path(svg_dir)
     for w in WORDS:
         l, word, cp = w["letter"].lower(), w["word"], w["emoji"]
-        run("rsvg-convert", "-w", "512", "-h", "512", "-o", str(ROOT / f"images/{l}.png"), str(svg_dir / f"{cp}.svg"))
-        # Comma stops espeak reading the 2nd "A" as the article "uh"; en-us says "zee" not "zed".
-        # Check pronunciation without audio: espeak-ng -v en-us -q -x "<text>"
-        text = f"{l.upper()}. {l.upper()}, is for {word}."
-        run("espeak-ng", "-v", "en-us", "-s", "130", "-w", str(ROOT / f"sounds/_{l}.wav"), text)
-        run("ffmpeg", "-y", "-loglevel", "error", "-i", str(ROOT / f"sounds/_{l}.wav"),
+        spoken = w["phonetic"] if PHONETIC else w["letter"]
+        run("inkscape", "-w", "512", "-h", "512", "-o", str(ROOT / f"images/{l}.png"), str(svg_dir / f"{cp}.svg"))
+        raw = ROOT / f"sounds/_{l}.wav"
+        speak(f"{spoken}, is for {word}.", raw)
+        run("ffmpeg", "-y", "-loglevel", "error", "-i", str(raw),
             "-af", "loudnorm=I=-16:TP=-1.5", "-ar", "22050", "-ac", "1", "-c:a", "pcm_s16le",
             str(ROOT / f"sounds/{l}.wav"))
-        (ROOT / f"sounds/_{l}.wav").unlink()
+        raw.unlink()
     icon(ROOT / "images/icon_focus_fhd.png", 540, 405)
     icon(ROOT / "images/icon_focus_hd.png", 290, 218)
     icon(ROOT / "images/splash_fhd.png", 1920, 1080)
