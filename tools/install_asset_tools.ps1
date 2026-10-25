@@ -10,9 +10,16 @@ if (-not (Get-Command ffmpeg -ErrorAction SilentlyContinue)) {
     if ($LASTEXITCODE) { throw 'ffmpeg install failed' }
 }
 
+$inkscapeBin = Join-Path $env:ProgramFiles 'Inkscape\bin'
 if (-not (Get-Command inkscape -ErrorAction SilentlyContinue)) {
-    winget install -e --id Inkscape.Inkscape
-    if ($LASTEXITCODE) { throw 'Inkscape install failed' }
+    if (-not (Test-Path (Join-Path $inkscapeBin 'inkscape.exe'))) {
+        winget install -e --id Inkscape.Inkscape
+        if ($LASTEXITCODE) { throw 'Inkscape install failed' }
+    }
+    # Installed but not on PATH; gen_assets.py calls `inkscape` by name.
+    $userPath = [Environment]::GetEnvironmentVariable('Path', 'User')
+    [Environment]::SetEnvironmentVariable('Path', "$userPath;$inkscapeBin", 'User')
+    $env:Path += ";$inkscapeBin"
 }
 
 $voices = Join-Path $root 'voices'
@@ -23,6 +30,16 @@ foreach ($ext in '.onnx', '.onnx.json') {
     if (-not (Test-Path $file)) {
         Invoke-WebRequest -Uri ($base + $ext + '?download=true') -OutFile $file
     }
+}
+
+$twemoji = Join-Path $root 'twemoji-svg'
+if (-not (Test-Path (Join-Path $twemoji 'package'))) {
+    New-Item -ItemType Directory -Path $twemoji -Force | Out-Null
+    $tgz = npm pack @twemoji/svg --pack-destination $twemoji | Select-Object -Last 1
+    if ($LASTEXITCODE) { throw 'npm pack failed' }
+    tar -xzf (Join-Path $twemoji $tgz) -C $twemoji
+    if ($LASTEXITCODE) { throw 'tar extract failed' }
+    Remove-Item (Join-Path $twemoji $tgz)
 }
 
 # winget changes PATH only for new sessions.

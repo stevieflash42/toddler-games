@@ -17,7 +17,7 @@ Record each letter as 16-bit mono PCM WAV (22.05 or 44.1 kHz) and overwrite `sou
 
 Needs Python 3. Run `pwsh tools/install_asset_tools.ps1` once to install `piper-tts`, `Pillow`, ffmpeg, Inkscape, and the [en_US-ryan-high](https://huggingface.co/rhasspy/piper-voices) voice into `voices/`.
 
-Extract `npm pack @twemoji/svg`, then run `python tools/gen_assets.py <extracted>/package`.
+The same script extracts `npm pack @twemoji/svg` into `twemoji-svg/` (gitignored). Then run `python tools/gen_assets.py twemoji-svg/package`.
 
 To change words, edit `words.json`, which the channel and the script both read. Each entry has `letter`, `word`, and `phonetic` (espeak IPA in Piper's `[[ ]]` markup). `PHONETIC` in `tools/gen_assets.py` switches speech from the letter to `phonetic`; it is off by default.
 
