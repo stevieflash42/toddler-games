@@ -45,8 +45,9 @@ def main(svg_dir):
         run("inkscape", "-w", "512", "-h", "512", "-o", str(ROOT / f"images/{l}.png"), str(svg_dir / f"{cp}.svg"))
         raw = ROOT / f"sounds/_{l}.wav"
         speak(f"{spoken}, is for {word}.", raw)
+        # apad: Roku stays silent on WAVs under 64 KiB; 2 s at 22050 Hz mono s16 is 88 KB.
         run("ffmpeg", "-y", "-loglevel", "error", "-i", str(raw),
-            "-af", "loudnorm=I=-16:TP=-1.5", "-ar", "22050", "-ac", "1", "-c:a", "pcm_s16le",
+            "-af", "loudnorm=I=-16:TP=-1.5,apad=whole_dur=2", "-ar", "22050", "-ac", "1", "-c:a", "pcm_s16le",
             str(ROOT / f"sounds/{l}.wav"))
         raw.unlink()
     icon(ROOT / "images/icon_focus_fhd.png", 540, 405)
