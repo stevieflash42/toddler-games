@@ -5,44 +5,44 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#ff9f43"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="ABCs"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png">
 <title>ABCs</title>
 <style>
-:root{--bg:#fff4e0;--ink:#2b2b2b;--card:#fff;--btn:#ff9f43}
-@media(prefers-color-scheme:dark){:root{--bg:#1d2433;--ink:#f4f4f4;--card:#2b3550}}
 *{box-sizing:border-box;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%;overscroll-behavior:none;background:var(--bg);color:var(--ink);font-family:system-ui,sans-serif}
-body{display:flex;flex-direction:column;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
-#grid{flex:1;display:grid;grid-template-columns:repeat(auto-fit,minmax(64px,1fr));gap:8px;padding:12px;align-content:start;overflow:auto}
-#grid button{aspect-ratio:1;font-size:clamp(28px,8vw,44px);font-weight:800;border:0;border-radius:16px;background:var(--card);color:var(--ink);box-shadow:0 3px 0 #0002;cursor:pointer}
-#card{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:var(--bg);z-index:2;padding:16px}
-#card.on{display:flex}
-#big{font-size:min(40vw,40vh);font-weight:800;line-height:1}
-#pic{font-size:min(30vw,26vh);line-height:1}
-#word{font-size:clamp(24px,8vw,44px);font-weight:700}
-#nav{display:flex;gap:12px;margin-top:12px}
-#nav button{min-width:64px;min-height:64px;font-size:28px;border:0;border-radius:32px;background:var(--btn);color:#fff;font-weight:800;cursor:pointer}
+html,body{margin:0;height:100%;overscroll-behavior:none;background:#ff6b6b;color:#fff;font-family:system-ui,sans-serif;font-weight:800}
+body{position:fixed;inset:0;display:grid;grid-template:"l p" 1fr "w w" auto/1fr 1fr;align-items:center;justify-items:center;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);transition:background .2s}
+#letter{grid-area:l;font-size:min(40vw,45vh);line-height:1}
+#pic{grid-area:p;max-width:90%;max-height:60vh;aspect-ratio:1;object-fit:contain}
+#word{grid-area:w;font-size:min(14vw,16vh);padding-bottom:3vh;text-align:center}
+@media(orientation:portrait){body{grid-template:"l" 1fr "p" 1fr "w" auto/1fr}#letter{font-size:min(45vw,25vh)}#pic{max-height:35vh}}
+#start{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#ff6b6b;font-size:min(14vw,12vh);z-index:2;cursor:pointer}
 </style>
 </head>
 <body>
-<div id="grid"></div>
-<div id="card"><div id="big"></div><div id="pic"></div><div id="word"></div><div id="nav"><button id="prev" aria-label="Previous">◀</button><button id="say" aria-label="Say it">🔊</button><button id="close" aria-label="All letters">⊞</button><button id="next" aria-label="Next">▶</button></div></div>
+<div id="letter"></div><img id="pic" alt=""><div id="word"></div>
+<div id="start">Tap to start</div>
 <script>
-const W = 'Apple🍎,Ball⚽,Cat🐱,Dog🐶,Egg🥚,Fish🐟,Grapes🍇,Hat🎩,Ice cream🍦,Juice🧃,Kite🪁,Lion🦁,Moon🌙,Nose👃,Orange🍊,Pig🐷,Queen👑,Rainbow🌈,Sun☀️,Tree🌳,Umbrella☂️,Violin🎻,Whale🐳,X-ray🩻,Yo-yo🪀,Zebra🦓'.split(',')
-  .map((s, i) => { const m = s.match(/^([A-Za-z -]+)(.+)$/); return { l: String.fromCharCode(65 + i), w: m[1], e: m[2] }; });
 const $ = id => document.getElementById(id);
-let i = 0;
-function say() {
-  const { l, w } = W[i];
-  try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(`${l}. ${l} is for ${w}.`); u.rate = .8; speechSynthesis.speak(u); } catch { }
-}
+const audio = new Audio();
+let items = [], i = 0, last = 0;
 function show(n) {
-  i = (n + 26) % 26; const { l, w, e } = W[i];
-  $('big').textContent = l + l.toLowerCase(); $('pic').textContent = e; $('word').textContent = w;
-  $('card').classList.add('on'); say();
+  i = (n + items.length) % items.length;
+  const { letter, word, color } = items[i], l = letter.toLowerCase();
+  const bg = '#' + color.slice(2, 8);
+  document.body.style.background = bg;
+  document.querySelector('meta[name=theme-color]').content = bg;
+  $('letter').textContent = letter + l; $('word').textContent = word; $('pic').src = `images/${l}.png`;
+  audio.pause(); audio.src = `sounds/${l}.wav`; audio.play().catch(() => { });
 }
-W.forEach((x, n) => { const b = document.createElement('button'); b.textContent = x.l; b.onclick = () => show(n); $('grid').appendChild(b); });
-$('prev').onclick = () => show(i - 1); $('next').onclick = () => show(i + 1); $('say').onclick = say;
-$('close').onclick = () => { speechSynthesis.cancel(); $('card').classList.remove('on'); };
+// 300 ms throttle matches the Roku channel.
+function step(d) { const t = Date.now(); if (t - last < 300) return; last = t; show(i + d); }
+$('start').onclick = () => { $('start').hidden = true; show(0); };
+addEventListener('pointerdown', e => { if (!$('start').hidden) return; step(e.clientX < innerWidth / 2 ? -1 : 1); });
+addEventListener('keydown', e => {
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (!$('start').hidden) { $('start').click(); return; }
+  step(e.key === 'ArrowLeft' ? -1 : 1);
+});
 addEventListener('contextmenu', e => e.preventDefault());
 addEventListener('gesturestart', e => e.preventDefault());
+fetch('words.json').then(r => r.json()).then(j => { items = j; }).catch(() => { $('start').textContent = 'Could not load words'; $('start').onclick = null; });
 </script>
 </body>
 </html>

@@ -8,12 +8,14 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: github-pages
-    defaults:
-      run:
-        working-directory: web-games/abcs
     steps:
       - uses: actions/checkout@v4
-      - run: mkdir _site && cp index.html manifest.webmanifest icon-*.png _site/
+      - run: |
+          mkdir -p _site/images
+          cp web-games/abcs/index.html web-games/abcs/manifest.webmanifest web-games/abcs/icon-*.png _site/
+          cp roku-games/abcs/words.json _site/
+          cp -r roku-games/abcs/sounds _site/
+          cp roku-games/abcs/images/?.png _site/images/
       - uses: actions/upload-pages-artifact@v3
-        with: { path: web-games/abcs/_site }
+        with: { path: _site }
       - uses: actions/deploy-pages@v4
