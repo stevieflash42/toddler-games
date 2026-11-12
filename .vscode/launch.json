@@ -8,9 +8,9 @@
             "name": "Python Debugger: gen_assets",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}\\roku-games\\tools\\gen_assets.py",
+            "program": "${workspaceFolder}\\roku-games\\abcs\\tools\\gen_assets.py",
             "console": "integratedTerminal",
-            "args": ["${workspaceFolder}\\roku-games\\twemoji-svg\\package"],
+            "args": ["${workspaceFolder}\\roku-games\\abcs\\twemoji-svg\\package"],
             "subProcess": false
         }
     ]
