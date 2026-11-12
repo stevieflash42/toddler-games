@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#ff9f43"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="ABCs"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png">
+<title>ABCs</title>
+<style>
+:root{--bg:#fff4e0;--ink:#2b2b2b;--card:#fff;--btn:#ff9f43}
+@media(prefers-color-scheme:dark){:root{--bg:#1d2433;--ink:#f4f4f4;--card:#2b3550}}
+*{box-sizing:border-box;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overscroll-behavior:none;background:var(--bg);color:var(--ink);font-family:system-ui,sans-serif}
+body{display:flex;flex-direction:column;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+#grid{flex:1;display:grid;grid-template-columns:repeat(auto-fit,minmax(64px,1fr));gap:8px;padding:12px;align-content:start;overflow:auto}
+#grid button{aspect-ratio:1;font-size:clamp(28px,8vw,44px);font-weight:800;border:0;border-radius:16px;background:var(--card);color:var(--ink);box-shadow:0 3px 0 #0002;cursor:pointer}
+#card{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:var(--bg);z-index:2;padding:16px}
+#card.on{display:flex}
+#big{font-size:min(40vw,40vh);font-weight:800;line-height:1}
+#pic{font-size:min(30vw,26vh);line-height:1}
+#word{font-size:clamp(24px,8vw,44px);font-weight:700}
+#nav{display:flex;gap:12px;margin-top:12px}
+#nav button{min-width:64px;min-height:64px;font-size:28px;border:0;border-radius:32px;background:var(--btn);color:#fff;font-weight:800;cursor:pointer}
+</style>
+</head>
+<body>
+<div id="grid"></div>
+<div id="card"><div id="big"></div><div id="pic"></div><div id="word"></div><div id="nav"><button id="prev" aria-label="Previous">◀</button><button id="say" aria-label="Say it">🔊</button><button id="close" aria-label="All letters">⊞</button><button id="next" aria-label="Next">▶</button></div></div>
+<script>
+const W = 'Apple🍎,Ball⚽,Cat🐱,Dog🐶,Egg🥚,Fish🐟,Grapes🍇,Hat🎩,Ice cream🍦,Juice🧃,Kite🪁,Lion🦁,Moon🌙,Nose👃,Orange🍊,Pig🐷,Queen👑,Rainbow🌈,Sun☀️,Tree🌳,Umbrella☂️,Violin🎻,Whale🐳,X-ray🩻,Yo-yo🪀,Zebra🦓'.split(',')
+  .map((s, i) => { const m = s.match(/^([A-Za-z -]+)(.+)$/); return { l: String.fromCharCode(65 + i), w: m[1], e: m[2] }; });
+const $ = id => document.getElementById(id);
+let i = 0;
+function say() {
+  const { l, w } = W[i];
+  try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(`${l}. ${l} is for ${w}.`); u.rate = .8; speechSynthesis.speak(u); } catch { }
+}
+function show(n) {
+  i = (n + 26) % 26; const { l, w, e } = W[i];
+  $('big').textContent = l + l.toLowerCase(); $('pic').textContent = e; $('word').textContent = w;
+  $('card').classList.add('on'); say();
+}
+W.forEach((x, n) => { const b = document.createElement('button'); b.textContent = x.l; b.onclick = () => show(n); $('grid').appendChild(b); });
+$('prev').onclick = () => show(i - 1); $('next').onclick = () => show(i + 1); $('say').onclick = say;
+$('close').onclick = () => { speechSynthesis.cancel(); $('card').classList.remove('on'); };
+addEventListener('contextmenu', e => e.preventDefault());
+addEventListener('gesturestart', e => e.preventDefault());
+</script>
+</body>
+</html>

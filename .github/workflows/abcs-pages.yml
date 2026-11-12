@@ -1,0 +1,19 @@
+name: Deploy abcs
+on:
+  workflow_dispatch:
+permissions:
+  pages: write
+  id-token: write
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: github-pages
+    defaults:
+      run:
+        working-directory: web-games/abcs
+    steps:
+      - uses: actions/checkout@v4
+      - run: mkdir _site && cp index.html manifest.webmanifest icon-*.png _site/
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: web-games/abcs/_site }
+      - uses: actions/deploy-pages@v4
