@@ -13,6 +13,7 @@ body{position:fixed;inset:0;display:grid;grid-template:"l p" 1fr "w w" auto/1fr 
 #word{grid-area:w;font-size:min(14vw,16vh);padding-bottom:3vh;text-align:center}
 @media(orientation:portrait){body{grid-template:"l" 1fr "p" 1fr "w" auto/1fr}#letter{font-size:min(45vw,25vh)}#pic{max-height:35vh}}
 #start{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#ff6b6b;font-size:min(14vw,12vh);z-index:2;cursor:pointer}
+#start[hidden]{display:none}
 </style>
 </head>
 <body>
